@@ -1,0 +1,40 @@
+name: Build from Containerfile
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Container
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    env:
+      REGISTRY: platformghruntest.azurecr.io
+    steps:
+    - name: Clone the repository
+      uses: actions/checkout@v4
+
+    - name: Buildah Action
+      id: build
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: github-actions-runner
+        tags: ${{ github.sha }} latest
+        containerfiles: |
+          ./Dockerfile
+
+    - name: Log in to the GitHub Container registry
+      uses: redhat-actions/podman-login@v1
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ secrets.CR_USERNAME }}
+        password: ${{ secrets.CR_PASSWORD }}
+        
+    - name: Push to GitHub Container Repository
+      id: push-to-ghcr
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build.outputs.image }}
+        tags: ${{ steps.build.outputs.tags }}
+        registry: ${{ env.REGISTRY }}

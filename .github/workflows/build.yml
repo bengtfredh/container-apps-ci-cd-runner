@@ -11,6 +11,8 @@ jobs:
       packages: write
     env:
       REGISTRY: platformghruntest.azurecr.io
+      CR_USERNAME: ${{ secrets.CR_USERNAME }}
+      CR_PASSWORD: ${{ secrets.CR_PASSWORD }}
     steps:
     - name: Clone the repository
       uses: actions/checkout@v4
@@ -24,14 +26,14 @@ jobs:
         containerfiles: |
           ./Dockerfile
 
-    - name: Log in to the GitHub Container registry
+    - name: Log in to Container registry
       uses: redhat-actions/podman-login@v1
       with:
         registry: ${{ env.REGISTRY }}
-        username: ${{ secrets.CR_USERNAME }}
-        password: ${{ secrets.CR_PASSWORD }}
+        username: ${{ env.CR_USERNAME }}
+        password: ${{ env.CR_PASSWORD }}
         
-    - name: Push to GitHub Container Repository
+    - name: Push to Container Repository
       id: push-to-ghcr
       uses: redhat-actions/push-to-registry@v2
       with:

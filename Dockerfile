@@ -5,7 +5,7 @@ USER root
 
 # install curl and jq
 RUN apt-get update && apt-get install -y curl jq && \
-    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash && \
+    curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

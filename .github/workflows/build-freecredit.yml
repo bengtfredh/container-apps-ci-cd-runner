@@ -38,14 +38,7 @@ jobs:
         containerfiles: |
           ./Dockerfile
     - name: Log in to Container registry
-      id: acrlogin
-      uses: redhat-actions/podman-login@v1
-      env:
-        ACRTOKEN: $(az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID_FC }} --only-show-errors)
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: 00000000-0000-0000-0000-000000000000
-        password: ${{ env.ACRTOKEN }}
+      run: podman login ${{ env.REGISTRY }} -u 00000000-0000-0000-0000-000000000000 -p $(az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID_FC }} --only-show-errors)
     - name: Push to Container Repository
       uses: redhat-actions/push-to-registry@v2
       with:

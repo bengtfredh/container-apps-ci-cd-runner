@@ -1,24 +1,33 @@
-name: Build from Containerfile
+name: build-freecredit
 on:
   push:
     branches:
       - main
   workflow_dispatch:
 
-jobs:
-  build:
-    name: Build Container
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
+permissions:
+      id-token: write
+      contents: read
+      
+jobs: 
+  build-image:
+    runs-on: self-hosted
     env:
-      REGISTRY: platformghruntest.azurecr.io
-      CR_USERNAME: ${{ secrets.CR_USERNAME }}
-      CR_PASSWORD: ${{ secrets.CR_PASSWORD }}
+      REGISTRY: freecreditghrunner.azurecr.io
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_FC }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID_FC }}
     steps:
+    - uses: actions/checkout@v4
+    - name: 'Azure login'
+      uses: azure/login@v2
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
     - name: Clone the repository
       uses: actions/checkout@v4
-
+      with:
+        repository: bengtfredh/container-apps-ci-cd-runner
     - name: Buildah Action
       id: build
       uses: redhat-actions/buildah-build@v2
@@ -27,14 +36,6 @@ jobs:
         tags: ${{ github.sha }} latest
         containerfiles: |
           ./Dockerfile
-
-    - name: Log in to Container registry
-      uses: redhat-actions/podman-login@v1
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ env.CR_USERNAME }}
-        password: ${{ env.CR_PASSWORD }}
-        
     - name: Push to Container Repository
       uses: redhat-actions/push-to-registry@v2
       with:

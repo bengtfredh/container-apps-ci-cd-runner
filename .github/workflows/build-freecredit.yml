@@ -42,7 +42,7 @@ jobs:
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ env.AZURE_CLIENT_ID }}
-        password: $(az acr login --name crfoobar --expose-token --output tsv --query accessToken)
+        password: $(az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken)
     - name: Push to Container Repository
       uses: redhat-actions/push-to-registry@v2
       with:

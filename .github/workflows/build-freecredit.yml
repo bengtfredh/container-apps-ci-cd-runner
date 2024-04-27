@@ -11,6 +11,7 @@ permissions:
       
 jobs: 
   build-image:
+    environment: FREECREDIT
     runs-on: ubuntu-latest
     env:
       REGISTRY: freecreditghrunner.azurecr.io

@@ -3,6 +3,8 @@ FROM ghcr.io/actions/actions-runner:latest
 
 USER root
 
+ARG VERSION_ID="22.04"
+
 # install packages
 RUN apt-get update && apt-get install -y curl wget jq apt-utils unzip git && \
     curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \

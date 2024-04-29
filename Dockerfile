@@ -4,7 +4,7 @@ FROM ghcr.io/actions/actions-runner:latest
 USER root
 
 # install packages
-RUN apt-get update && apt-get install -y curl jq apt-utils unzip git && \
+RUN apt-get update && apt-get install -y curl wget jq apt-utils unzip git && \
     curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \

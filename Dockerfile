@@ -3,11 +3,17 @@ FROM ghcr.io/actions/actions-runner:latest
 
 USER root
 
-# install curl and jq
+# install packages
 RUN apt-get update && apt-get install -y curl jq apt-utils unzip git && \
     curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
+    source /etc/os-release && \
+    wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    rm packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y powershell && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

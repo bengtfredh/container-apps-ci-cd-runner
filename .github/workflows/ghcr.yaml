@@ -1,11 +1,9 @@
-name: Build from Containerfile
+name: Build ghcr.io
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
   schedule:
-    - cron: "33 3 * * *"
+    - cron: "44 4 * * *"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,9 +12,8 @@ jobs:
     permissions:
       packages: write
     env:
-      REGISTRY: platformghruntest.azurecr.io
-      CR_USERNAME: ${{ secrets.CR_USERNAME }}
-      CR_PASSWORD: ${{ secrets.CR_PASSWORD }}
+      REGISTRY: ghcr.io/bengtfredh
+      IMAGENAME: github-actions-runner
     steps:
     - name: Clone the repository
       uses: actions/checkout@v4
@@ -25,21 +22,22 @@ jobs:
       id: build
       uses: redhat-actions/buildah-build@v2
       with:
-        image: github-actions-runner
+        image: ${{ env.IMAGENAME }}
         tags: ${{ github.sha }} latest
+        oci: true
         containerfiles: |
           ./Dockerfile
-
-    - name: Log in to Container registry
+    - name: Log in to the GitHub Container registry
       uses: redhat-actions/podman-login@v1
       with:
         registry: ${{ env.REGISTRY }}
-        username: ${{ env.CR_USERNAME }}
-        password: ${{ env.CR_PASSWORD }}
-        
-    - name: Push to Container Repository
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push to GitHub Container Repository
+      id: push-to-ghcr
       uses: redhat-actions/push-to-registry@v2
       with:
         image: ${{ steps.build.outputs.image }}
         tags: ${{ steps.build.outputs.tags }}
         registry: ${{ env.REGISTRY }}
+

@@ -4,6 +4,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: "22 2 * * *"
 
 permissions:
       id-token: write

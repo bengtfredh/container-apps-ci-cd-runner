@@ -19,7 +19,7 @@ jobs:
       CR_PASSWORD: ${{ secrets.CR_PASSWORD }}
     steps:
     - name: Clone the repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Buildah Action
       id: build
